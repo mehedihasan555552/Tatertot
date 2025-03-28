@@ -1,0 +1,71 @@
+{
+  "providerName": "TaterTot Kids Club",
+  "lastUpdated": "2025-03-28T21:13:01.495858+00:00",
+  "language": "en-US",
+  "tvSpecials": [
+    {
+      "id": "8",
+      "title": "Jesus is the Champion",
+      "content": {
+        "dateAdded": "2025-03-28T21:13:01.497952+00:00",
+        "videos": [
+          {
+            "url": "https://player.viloud.tv/embed/video/c11a40d2e98675b36bd8bb2480153f40",
+            "quality": "HD",
+            "videoType": "HLS"
+          }
+        ],
+        "duration": 100,
+        "language": "en-US"
+      },
+      "genres": [
+        "faith"
+      ],
+      "tags": [
+        "Jesus is the Champion"
+      ],
+      "thumbnail": "https://quotes-bible.com/wp-content/uploads/2023/03/champion-verses-thumbnail.jpg",
+      "releaseDate": "2025-03-28",
+      "shortDescription": "Jesus is the Champion",
+      "longDescription": "Jesus is the Champion"
+    },
+    {
+      "id": "16",
+      "title": "Yes Papa!",
+      "content": {
+        "dateAdded": "2025-03-28T21:13:01.498000+00:00",
+        "videos": [
+          {
+            "url": "https://571561.gvideo.io/videos/571561_NCqi351mp5MkKGc/master.m3u8",
+            "quality": "HD",
+            "videoType": "HLS"
+          }
+        ],
+        "duration": 300,
+        "language": "en-US"
+      },
+      "genres": [
+        "faith"
+      ],
+      "tags": [
+        "Yes Papa!"
+      ],
+      "thumbnail": "https://tatertotkidsclub.tv/wp-content/uploads/2025/03/yespapa.jpeg",
+      "releaseDate": "2025-03-28",
+      "shortDescription": "Yes Papa!",
+      "longDescription": "Yes Papa!"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Jesus is the Champion",
+      "query": "jesus_is_the_champion",
+      "order": "most_recent"
+    },
+    {
+      "name": "Yes Papa!",
+      "query": "yes_papa!",
+      "order": "most_recent"
+    }
+  ]
+}

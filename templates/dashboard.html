@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .nav-tabs .nav-link.active {
+        background-color: #f49519 !important;
+        color: white !important;
+        border-color: #f49519 #f49519 #fff !important;
+    }
+</style>
+
+
+
+<div class="container-fluid content-wrapper">
+    <!-- Django Messages -->
+    {% if messages %}
+      <div class="mt-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Shows List -->
+        <div class="col-md-6 pe-md-2">
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Shows</h5>
+                    <button class="btn btn-primary btn-sm" onclick="switchToShowTab()" style="background-color: #f49519!important;">
+                        <i class="bi bi-plus-circle me-1"></i> Add New Show
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="shows-list p-2">
+                        {% for show in shows %}
+                        <div class="show border rounded mb-3 p-2">
+                            <div class="show-header d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <span class="show-toggle me-2" data-show-id="{{ show.id }}" role="button">
+                                        <i class="bi bi-caret-right-fill toggle-icon"></i>
+                                    </span>
+                                    <h6 class="mb-0">{{ show.title }}</h6>
+                                </div>
+                                <div class="show-actions btn-group btn-group-sm">
+                                    <form method="POST" action="{% url 'move_show' show.id -1 %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button class="btn btn-outline-secondary" title="Move Up">↑</button>
+                                    </form>
+                                    <form method="POST" action="{% url 'move_show' show.id 1 %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button class="btn btn-outline-secondary" title="Move Down">↓</button>
+                                    </form>
+                                    <a href="{% url 'add_episode' show.id %}" class="btn btn-outline-success">Add Episode</a>
+                                    <a href="{% url 'edit_show' show.id %}" class="btn btn-outline-secondary">Edit</a>
+                                    <form method="POST" action="{% url 'delete_show' show.id %}" class="d-inline" onsubmit="return confirm('Delete show?');">
+                                        {% csrf_token %}
+                                        <button class="btn btn-outline-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Episodes -->
+                            <div class="episodes mt-2 ms-3" id="episodes{{ show.id }}" style="display: none;">
+                                {% for episode in show.episodes.all %}
+                                <div class="episode d-flex align-items-center border p-2 mb-2 rounded">
+                                    <img src="{{ episode.thumbnail_url }}" alt="{{ episode.title }}" class="me-2" width="60">
+                                    <div class="flex-grow-1">
+                                        <strong>{{ episode.title }}</strong><br>
+                                        <small class="text-muted">{{ episode.duration }} Seconds</small>
+                                    </div>
+                                    <form method="POST" action="{% url 'move_episode' episode.id -1 %}" class="me-1">
+                                        {% csrf_token %}
+                                        <button class="btn btn-outline-secondary btn-sm" title="Move Up">↑</button>
+                                    </form>
+                                    <form method="POST" action="{% url 'move_episode' episode.id 1 %}" class="me-1">
+                                        {% csrf_token %}
+                                        <button class="btn btn-outline-secondary btn-sm" title="Move Down">↓</button>
+                                    </form>
+                                    <a href="{% url 'edit_episode' episode.id %}" class="btn btn-outline-secondary btn-sm me-1">Edit</a>
+                                    <form method="POST" action="{% url 'delete_episode' episode.id %}" onsubmit="return confirm('Delete episode?');">
+                                        {% csrf_token %}
+                                        <button class="btn btn-outline-danger btn-sm">Delete</button>
+                                    </form>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column Tabs -->
+        <div class="col-md-6 ps-md-2">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="formTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link {% if active_tab == 'episodeFormTab' %}active{% endif %}" id="episode-tab" data-bs-toggle="tab" data-bs-target="#episodeFormTab" type="button" role="tab" aria-controls="episodeFormTab" aria-selected="{% if active_tab == 'episodeFormTab' %}true{% else %}false{% endif %}">
+                                Add/Edit Episode
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link {% if active_tab == 'showFormTab' %}active{% endif %}" id="show-tab" data-bs-toggle="tab" data-bs-target="#showFormTab" type="button" role="tab" aria-controls="showFormTab" aria-selected="{% if active_tab == 'showFormTab' %}true{% else %}false{% endif %}">
+                                Add/Edit Show
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body tab-content" id="formTabsContent">
+                    <!-- Episode Form Tab -->
+                    <div class="tab-pane fade {% if active_tab == 'episodeFormTab' %}show active{% endif %}" id="episodeFormTab" role="tabpanel" aria-labelledby="episode-tab">
+                        <form method="POST" enctype="multipart/form-data" action="{{ form_action_url }}">
+                            {% csrf_token %}
+                            {{ episode_form.as_p }}
+                            <button type="submit" class="btn btn-success" style="background-color: #f49519!important;">
+                                {% if edit_mode %}Update Episode{% else %}Save Episode{% endif %}
+                            </button>
+                        </form>
+                    </div>
+                   
+                    <!-- Show Form Tab -->
+                    <div class="tab-pane fade {% if active_tab == 'showFormTab' %}show active{% endif %}" id="showFormTab" role="tabpanel" aria-labelledby="show-tab">
+                        <form method="POST" action="{{ show_form_action_url }}">
+                            {% csrf_token %}
+                            {{ show_form.as_p }}
+                            <button type="submit" class="btn btn-primary" style="background-color: #f49519!important;">
+                                {% if edit_mode %}Update Show{% else %}Save Show{% endif %}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Platform Selection Card -->
+            <div class="card mt-2 shadow-sm rounded-3">
+                <div class="card-header bg-primary text-white" style="background-color: #f49519!important;">
+                    <h5 class="mb-0"><i class="bi bi-upload me-2"></i>Publish Content</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'publish' %}" id="publishForm">
+                        {% csrf_token %}
+                        <div class="row g-3 align-items-end">
+                            <!-- Platform Dropdown -->
+                            <div class="col-md-7">
+                                <label for="platformSelect" class="form-label fw-semibold">Select Platform</label>
+                                <select class="form-select" id="platformSelect" name="platform" required>
+                                    <option value="roku">Roku</option>
+                                    <option value="firetv">Fire TV</option>
+                                    <option value="both">Both</option>
+                                </select>
+                            </div>
+            
+                            <!-- Publish Button -->
+                            <div class="col-md-5 text-md-end">
+                                <button type="submit" class="btn btn-success w-100" style="background-color: #f49519!important;">
+                                    <i class="bi bi-cloud-upload me-2"></i> Publish
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle episodes visibility with improved functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const showToggles = document.querySelectorAll('.show-toggle');
+        
+        showToggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const showId = this.getAttribute('data-show-id');
+                const episodesDiv = document.getElementById('episodes' + showId);
+                const toggleIcon = this.querySelector('.toggle-icon');
+                
+                if (episodesDiv.style.display === 'none' || episodesDiv.style.display === '') {
+                    episodesDiv.style.display = 'block';
+                    toggleIcon.classList.remove('bi-caret-right-fill');
+                    toggleIcon.classList.add('bi-caret-down-fill');
+                } else {
+                    episodesDiv.style.display = 'none';
+                    toggleIcon.classList.remove('bi-caret-down-fill');
+                    toggleIcon.classList.add('bi-caret-right-fill');
+                }
+            });
+        });
+    });
+
+    // Switch to Show Form tab
+    function switchToShowTab() {
+        const showTab = document.querySelector('#show-tab');
+        const tabTrigger = new bootstrap.Tab(showTab);
+        tabTrigger.show();
+    }
+</script>
+
+{% endblock %}

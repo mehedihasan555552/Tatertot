@@ -1,0 +1,7 @@
+Django
+requests
+whitenoise
+gunicorn
+django-crispy-forms
+crispy-bootstrap5
+pillow
