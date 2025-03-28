@@ -52,7 +52,7 @@ def generate_firetv_feed():
 
     # Generate categories dynamically
     feed["categories"] = [
-        {"name": name, "query": slugify(name), "order": "most_recent"}
+        {"name": name, "query": name, "order": "most_recent"}
         for name in sorted(category_names)  # Ensure order consistency
     ]
 
